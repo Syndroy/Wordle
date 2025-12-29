@@ -73,7 +73,14 @@ type TileStatus = 'correct' | 'present' | 'absent' | '';
 export default function Home() {
   // 1. Pick a random solution on start
   const [solution, setSolution] = useState('');
-  
+  const [message, setMessage] = useState<string | null>(null);
+  const showMessage = (text: string, duration = 2000) => {
+    setMessage(text);
+
+  setTimeout(() => {
+    setMessage(null);
+  }, duration);
+};
   // 2. Track the board state
   const [board, setBoard] = useState<string[][]>(
     Array(6).fill(null).map(() => Array(5).fill(''))
@@ -91,11 +98,23 @@ export default function Home() {
   const [currentCol, setCurrentCol] = useState(0);
   const [gameState, setGameState] = useState<'playing' | 'won' | 'lost'>('playing');
 
-  // Initialize game
-  useEffect(() => {
+  // Restart game function
+  const restartGame = () => {
     const randomWord = wordList[Math.floor(Math.random() * wordList.length)];
     setSolution(randomWord.toUpperCase());
-    console.log("Solution:", randomWord); // For testing
+    setBoard(Array(6).fill(null).map(() => Array(5).fill('')));
+    setTileStatus(Array(6).fill(null).map(() => Array(5).fill('')));
+    setKeyStatus({});
+    setCurrentRow(0);
+    setCurrentCol(0);
+    setGameState('playing');
+    setMessage(null);
+    console.log("New solution:", randomWord); // For testing
+  };
+
+  // Initialize game
+  useEffect(() => {
+    restartGame();
   }, []);
 
   const getWordStatus = (guess: string[], solutionStr: string) => {
@@ -163,10 +182,10 @@ export default function Home() {
         // 4. Check Win/Loss
         if (currentGuessStr === solution) {
           setGameState('won');
-          alert('You Won!');
+          showMessage("🎉 You won!", 10000);
         } else if (currentRow === 5) {
           setGameState('lost');
-          alert(`Game Over! Word was ${solution}`);
+          showMessage(`Game over! Word was ${solution}`, 10000);
         } else {
           setCurrentRow(currentRow + 1);
           setCurrentCol(0);
@@ -205,11 +224,11 @@ export default function Home() {
   };
 
   return (
-    <section className="flex flex-col items-center min-h-screen py-10">
-      <h1 className="text-3xl font-bold mb-10 border-b-2 pb-2 px-10">Wordle</h1>
+    <section className="flex flex-col items-center min-h-screen">
+      <h1 className="text-3xl font-bold mb-10 border-b-2 pb-2 px-10 w-full text-center">Wordle</h1>
      
       
-      <div className="grid gap-2 mb-10">
+      <div className="grid gap-2 mb-5">
         {board.map((row, rowIndex) => (
           <div key={rowIndex} className="grid grid-cols-5 gap-2">
             {row.map((letter, colIndex) => (
@@ -223,8 +242,18 @@ export default function Home() {
           </div>
         ))}
       </div>
-      
+         {message && (
+  <div className="text-center m-3 text-lg font-semibold text-blue-500">
+    {message}
+  </div>
+)}
       <Keyboard onKeyPress={handleKeyPress} keyStatus={keyStatus} />
+<button
+        onClick={restartGame}
+        className="m-8 px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg transition-colors duration-200"
+      >
+        New Game
+      </button>
     </section>
   );
 }
