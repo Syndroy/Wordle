@@ -206,7 +206,7 @@ export default function Home() {
 
   return (
     <section className="flex flex-col items-center min-h-screen py-10">
-      <h1 className="text-3xl font-bold mb-10 border-b-2 pb-2 px-10">Wordle Clone</h1>
+      <h1 className="text-3xl font-bold mb-10 border-b-2 pb-2 px-10">Wordle</h1>
      
       
       <div className="grid gap-2 mb-10">
