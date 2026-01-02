@@ -1,4 +1,4 @@
-[
+export const WORDS = [
   "ABOUT",
   "ABOVE",
   "ABUSE",
@@ -525,3 +525,5 @@
   "NAMES",
   "NIGHT"
 ]
+
+
