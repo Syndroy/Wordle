@@ -369,16 +369,18 @@ export default function Home() {
           });
 
           // Check Win/Loss
-          if (data.gameStatus === 'won') {
+          // Inside handleKeyPress in your Home component
+        if (data.gameStatus === 'won') {
             setGameState('won');
-            setTimeout(() => alert('You Won!'), 100);
-          } else if (currentRow === 5) {
-            setGameState('lost');
-            setTimeout(() => alert('Game Over!'), 100);
-          } else {
-            setCurrentRow(prev => prev + 1);
-            setCurrentCol(0);
-          }
+          setTimeout(() => alert(`🎉 You Won! The word was ${data.solution}`), 100);
+        } else if (currentRow === 5) {
+          setGameState('lost');
+         // Revealed solution comes directly from the server data
+         setTimeout(() => alert(`Game Over! 😭 The word was: "${data.solution.toUpperCase()}"`), 100);
+        } else {
+        setCurrentRow(prev => prev + 1);
+        setCurrentCol(0);
+      }
 
         } catch (error) {
           console.error("API call failed", error);

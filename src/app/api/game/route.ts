@@ -1,6 +1,7 @@
 // src/app/api/game/route.ts
 import { NextResponse } from 'next/server';
-import { WORDS } from './words'; // Importing the data on the server
+import { WORDS } from './words'; 
+import dictionary from './dictionary.json';
 
 // --- LOGIC HELPER (Hidden from user) ---
 const getWordStatus = (guess: string[], solutionStr: string) => {
@@ -35,31 +36,35 @@ export async function GET() {
   return NextResponse.json({ gameId: randomIndex });
 }
 
-// 2. POST: CHECK GUESS (Securely checks logic)
 export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { guess, gameId } = body;
 
-    // Validate ID
     if (typeof gameId !== 'number' || gameId < 0 || gameId >= WORDS.length) {
       return NextResponse.json({ error: "Invalid Game ID" }, { status: 400 });
     }
 
-    const solution = WORDS[gameId]; // Retrieve the secret word from server memory
+    const solution = WORDS[gameId].toLowerCase();
+    const formattedGuess = guess.toLowerCase();
 
-    // Validate Word Exists
-    if (!WORDS.includes(guess)) {
-      return NextResponse.json({ error: "Not in word list" }, { status: 400 });
+    // STRICT VALIDATION: Exactly 5 letters, alphabetic only, exists in dictionary
+    const isFiveLetters = /^[a-z]{5}$/.test(formattedGuess);
+    const inDictionary = dictionary.includes(formattedGuess);
+
+    if (!isFiveLetters || !inDictionary) {
+      return NextResponse.json({ 
+        error: "Not a valid 5-letter word" 
+      }, { status: 400 });
     }
 
-    // Calculate Colors
-    const resultColors = getWordStatus(guess.split(''), solution);
-    const isWin = guess === solution;
+    const resultColors = getWordStatus(formattedGuess.split(''), solution);
+    const isWin = formattedGuess === solution;
 
     return NextResponse.json({ 
       result: resultColors, 
-      gameStatus: isWin ? 'won' : 'playing'
+      gameStatus: isWin ? 'won' : 'playing',
+      solution: solution // Send solution so frontend can show it on loss/win
     });
 
   } catch (error) {
