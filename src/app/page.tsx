@@ -84,6 +84,7 @@ export default function Home() {
 
     if (key === 'Enter') {
       if (currentCol === 5) {
+        setIsProcessing(true);
         const currentGuessArr = board[currentRow];
         const currentGuessStr = currentGuessArr.join('');
 
