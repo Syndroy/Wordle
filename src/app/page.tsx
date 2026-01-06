@@ -101,6 +101,7 @@ export default function Home() {
           // Handle Error (e.g. "Not in word list")
           if (!response.ok) {
             alert(data.error);
+            setIsProcessing(false)
             return;
           }
 
@@ -141,7 +142,9 @@ export default function Home() {
 
         } catch (error) {
           console.error("API call failed", error);
-        }
+        }finally {
+        setIsProcessing(false);
+      }
       }
     } else if (key === '⌫') {
       if (currentCol > 0) {
